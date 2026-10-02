@@ -1,9 +1,12 @@
 # Lab 01 report
 
-- Student name:
-- GitHub username:
-- Image filename:
+- Student name: Nazar Humenuk
+- GitHub username: dusterdin
+- Image filename:am335x-debian-13.6-base-v6.12-armhf-2026-07-24-4gb.img.xz 
 - SHA-256 (paste the checksum and state whether it matches the lab):
+796777685b309328abcab3a122f426282c83fbde7f481ebe3e20829441f878a9
+
+The checksum matches the expected value from the lab instructions.
 
 Replace each placeholder with your own command output. Label HOST and BBB
 results. Do not include passwords or private keys.
@@ -13,25 +16,61 @@ results. Do not include passwords or private keys.
 ### BBB: `uname -r`
 
 ```text
-<paste output>
+6.12.96-bone64
 ```
 
 ### BBB: `cat /etc/os-release`
 
 ```text
-<paste output>
+PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
+NAME="Debian GNU/Linux"
+VERSION_ID="13"
+VERSION="13 (trixie)"
+VERSION_CODENAME=trixie
+DEBIAN_VERSION_FULL=13.6
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
 ```
 
 ### BBB: `lsblk`
 
 ```text
-<paste output>
+NAME         MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+mmcblk0      179:0    0 14.5G  0 disk 
+├─mmcblk0p1  179:1    0   36M  0 part /boot/firmware
+├─mmcblk0p2  179:2    0  512M  0 part [SWAP]
+└─mmcblk0p3  179:3    0   14G  0 part /
+zram0        253:0    0  241M  0 disk [SWAP]
+mmcblk1      179:256  0  3.6G  0 disk 
+├─mmcblk1p1  179:257  0  1.8M  0 part 
+└─mmcblk1p2  179:258  0  3.6G  0 part 
+mmcblk1boot0 179:512  0    2M  1 disk 
+mmcblk1boot1 179:768  0    2M  1 disk 
 ```
 
 ### BBB: `ip addr`
 
 ```text
-<paste output>
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute
+       valid_lft forever preferred_lft forever
+2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 78:04:73:98:54:dc brd ff:ff:ff:ff:ff:ff
+    altname end0
+    altname enx7804739854dc
+3: usb0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 78:04:73:98:54:df brd ff:ff:ff:ff:ff:ff
+    inet 192.168.7.2/30 brd 192.168.7.3 scope global usb0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::7a04:73ff:fe98:54df/64 scope link proto kernel_ll
+       valid_lft forever preferred_lft forever
+
+BBB IP address (USB networking): 192.168.7.2       
 ```
 
 ## First user-space program
@@ -39,13 +78,13 @@ results. Do not include passwords or private keys.
 ### HOST, in this lab directory: `file build/hello`
 
 ```text
-<paste output>
+build/hello: ELF 32-bit LSB pie executable, ARM, EABI5 version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-armhf.so.3, BuildID[sha1]=56082b83d1852f2c77fbd0e1898fe8a27a2235ca, for GNU/Linux 3.2.0, not stripped
 ```
 
 ### BBB: `/home/debian/labs/lab01/hello`
 
 ```text
-<paste program output>
+Hello from Lab 01 on BeagleBone Black!
 ```
 
 ## Shared kernel workspace
@@ -53,22 +92,26 @@ results. Do not include passwords or private keys.
 ### HOST: `ls -lh ~/bbb-workspace/kernel/bb-kernel/deploy`
 
 ```text
-<paste file list>
+total 35M
+-rw-r--r-- 1 dusterdin dusterdin 177K Sep 13 15:46 6.12.100-bone71-dtbs.tar.zst
+-rw-r--r-- 1 dusterdin dusterdin  26M Sep 13 15:46 6.12.100-bone71-modules.tar.zst
+-rwxr-xr-x 1 dusterdin dusterdin 8.3M Sep 13 15:45 6.12.100-bone71.zImage
+-rw-r--r-- 1 dusterdin dusterdin 206K Sep 13 15:45 config-6.12.100-bone71
 ```
 
 ### HOST: `cat ~/bbb-workspace/kernel/bb-kernel/KERNEL/include/config/kernel.release`
 
 ```text
-<paste complete kernel release>
+6.12.100-bone71
 ```
 
 Do the full HOST and BBB kernel-release strings match exactly?
 
-<answer>
+<No. The HOST-built kernel tree reports `6.12.100-bone71`, while the BBB reports `6.12.96-bone64. Both come from the same `am33x-v6.12` branch family, but the exact patch level and BeagleBoard build suffix differ, because the `bb-kernel` `am33x-v6.12` branch has moved forward since the image was published on 2026-07-2`>
 
 Why must Lab 02 use a matching kernel tree?
 
-<short answer>
+<If the versions don't match, the kernel usually rejects the module, and forcing it can cause memory corruption.>
 
 Submit this completed report with `src/hello.c` and `Makefile`. Do not commit
 images, executables, toolchains, kernel sources, or build artifacts.
